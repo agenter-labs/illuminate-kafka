@@ -107,20 +107,20 @@ class Consumer extends Command
             Log::debug($payload);
         }
         
+        $headers = $payload['headers'] ?? [];
+        $body = $payload['body'] ?? null;
+
         if (is_string($listeners)) {
-            return $this->runListener($listeners);
+            return $this->runListener($listeners, $headers, $body);
         }
 
         foreach($listeners as $listener) {
-            $this->runListener($listener);
+            $this->runListener($listener, $headers, $body);
         }
     }
 
-    private function runListener($listener) {
-        return (new $listener(
-            $payload['headers'] ?? [],
-            $payload['body'] ?? null
-        ))->handle();
+    private function runListener($listener, $headers, $body) {
+        return (new $listener($headers, $body))->handle();
     }
 
 }
