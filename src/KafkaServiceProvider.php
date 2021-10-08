@@ -14,16 +14,15 @@ class KafkaServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__ . '/../config/kafka.php', 'kafka');
 
         $this->app->singleton('event.producer', function ($app) {
             return new Producer(
-                config('Kafka.brokers'),
-                config('Kafka.enabled'),
-                config('app.env')
+                $app['config']->get('kafka.brokers'),
+                $app['config']->get('kafka.enabled'),
+                $app['config']->get('app.env')
             );
         });
-
-        $this->mergeConfigFrom(__DIR__ . '/../config/kafka.php', 'kafka');
     }
 
     /**
