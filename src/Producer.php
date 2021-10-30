@@ -71,7 +71,7 @@ class Producer {
 
         $headers['time'] = time();
 
-        $header['client'] = [
+        $headers['client'] = [
             'ip' => request()->ip(),
             'user-agent' => request()->userAgent()
         ];
