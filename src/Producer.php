@@ -25,6 +25,12 @@ class Producer {
     private $headers = [];
 
     /**
+     * @var string|int
+     */
+    private $key;
+
+
+    /**
      * Construct producer
      */
     public function __construct($brokers = '127.0.0.1', $enabled = true, $env = 'development') {
@@ -52,6 +58,16 @@ class Producer {
     public function setHeaders(array $headers = []) {
         $this->headers = array_merge($this->headers, $headers);
     }
+
+    /**
+     * Set partition key Key
+     * 
+     * @param string|int $key
+     */
+    public function setKey($key) {
+        $this->key = $key;
+    }
+
 
     /**
      * Send to kafka
@@ -83,6 +99,7 @@ class Producer {
         // RD_KAFKA_PARTITION_UA, lets librdkafka choose the partition.
         // Messages with the same "$key" will be in the same topic partition.
         // This ensure that messages are consumed in order.
+        $key = $key ? $key : $this->key;
         $topic->produce(RD_KAFKA_PARTITION_UA, 0, $payload, $key);
 
         // pull for any events
