@@ -56,7 +56,9 @@ class Consumer extends Command
         // 'earliest': start from the beginning
         $conf->set('auto.offset.reset', config('kafka.offset', 'earliest'));
 
-        $conf->set('allow.auto.create.topics', config('kafka.auto_create_topics', false));
+        if (config('kafka.auto_create_topics', false)) {
+            $conf->set('allow.auto.create.topics', true);
+        }
         
         $consumer = new \RdKafka\KafkaConsumer($conf);
 
