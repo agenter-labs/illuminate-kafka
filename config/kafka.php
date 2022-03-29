@@ -9,6 +9,8 @@ return [
 
     'debug' => env('KAFKA_DEBUG', true),
 
+    'auto_create_topics' => false,
+
     'offset' => 'earliest',
 
     'topics' => [],
