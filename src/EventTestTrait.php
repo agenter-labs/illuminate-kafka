@@ -14,7 +14,7 @@ trait EventTestTrait
      */
     public function executeEvent(string $topic, $body, array $headers = [])
     {
-        $consumers = config('kafka.consumers.' . $topic);
+        $consumers = config('kafka.consumers', [])[$topic] ?? null;
 
         if (!$consumers) {
             throw new \OutOfBoundsException('Consumers not set for topic ' . $topic);

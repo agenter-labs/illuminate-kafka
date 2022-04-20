@@ -95,8 +95,7 @@ class Consumer extends Command
     public function process(\RdKafka\Message $message) {
         $this->info('Process topic ' . $message->topic_name);
 
-        $name = str_replace('.', '-', $message->topic_name);
-        $consumers = config('kafka.consumers.' . $name);
+        $consumers = config('kafka.consumers', [])[$message->topic_name] ?? null;
 
         if (!$consumers) {
             $this->error('Consumers not set for topic ' . $message->topic_name);
@@ -105,9 +104,8 @@ class Consumer extends Command
 
         $payload = json_decode($message->payload, true);
 
-        Log::debug('Process topic: ' . $message->topic_name);
-
         if (config('kafka.debug')) {
+            Log::debug('Process topic: ' . $message->topic_name);
             Log::debug($payload);
         }
         
