@@ -63,7 +63,8 @@ class Consumer extends Command
         $consumer = new \RdKafka\KafkaConsumer($conf);
 
         // Subscribe to topic 'test'
-        $consumer->subscribe(config('kafka.topics', []));
+        $topics = array_keys(config('kafka.consumers', []));
+        $consumer->subscribe($topics);
 
         $this->info("Waiting for partition assignment... 
             (make take some time when quickly re-joining the group after leaving it.)");
@@ -95,10 +96,10 @@ class Consumer extends Command
         $this->info('Process topic ' . $message->topic_name);
 
         $name = str_replace('.', '-', $message->topic_name);
-        $listeners = config('kafka.listeners.' . $name);
+        $consumers = config('kafka.consumers.' . $name);
 
-        if (!$listeners) {
-            $this->error('Listener not set for topic ' . $message->topic_name);
+        if (!$consumers) {
+            $this->error('Consumers not set for topic ' . $message->topic_name);
             return;
         }
 
@@ -113,17 +114,17 @@ class Consumer extends Command
         $headers = $payload['headers'] ?? [];
         $body = $payload['body'] ?? null;
 
-        if (is_string($listeners)) {
-            return $this->runListener($listeners, $headers, $body);
+        if (is_string($consumers)) {
+            return $this->runConsumer($consumers, $headers, $body);
         }
 
-        foreach($listeners as $listener) {
-            $this->runListener($listener, $headers, $body);
+        foreach($consumers as $consumer) {
+            $this->runConsumer($consumer, $headers, $body);
         }
     }
 
-    private function runListener($listener, $headers, $body) {
-        return (new $listener($headers, $body))->handle();
+    private function runConsumer($consumer, $headers, $body) {
+        return (new $consumer($headers, $body))->handle();
     }
 
 }

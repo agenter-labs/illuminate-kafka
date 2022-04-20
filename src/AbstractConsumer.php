@@ -2,7 +2,7 @@
 
 namespace AgenterLab\Kafka;
 
-abstract class AbstractListener
+abstract class AbstractConsumer
 {
 
     /**

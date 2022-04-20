@@ -14,22 +14,22 @@ trait EventTestTrait
      */
     public function executeEvent(string $topic, $body, array $headers = [])
     {
-        $listeners = config('kafka.listeners.' . $topic);
+        $consumers = config('kafka.consumers.' . $topic);
 
-        if (!$listeners) {
-            throw new \OutOfBoundsException('Listener not set for topic ' . $topic);
+        if (!$consumers) {
+            throw new \OutOfBoundsException('Consumers not set for topic ' . $topic);
         }
         
-        if (is_string($listeners)) {
-            return $this->runListener($listeners, $headers, $body);
+        if (is_string($consumers)) {
+            return $this->runConsumer($consumers, $headers, $body);
         }
 
-        foreach($listeners as $listener) {
-            $this->runListener($listener, $headers, $body);
+        foreach($consumers as $consumer) {
+            $this->runConsumer($consumer, $headers, $body);
         }
     }
 
-    private function runListener($listener, $headers, $body) {
-        return (new $listener($headers, $body))->handle();
+    private function runConsumer($consumer, $headers, $body) {
+        return (new $consumer($headers, $body))->handle();
     }
 }

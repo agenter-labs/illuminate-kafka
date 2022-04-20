@@ -12,8 +12,6 @@ return [
     'auto_create_topics' => false,
 
     'offset' => 'earliest',
-
-    'topics' => [],
-
-    'listeners' => []
+    
+    'consumers' => []
 ];
