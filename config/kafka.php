@@ -11,7 +11,7 @@ return [
 
     'auto_create_topics' => false,
 
-    'offset' => 'earliest',
+    'offset' => env('KAFKA_OFFSET_RESET', 'earliest'),
     
     'consumers' => []
 ];
