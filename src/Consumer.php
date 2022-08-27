@@ -4,6 +4,8 @@ namespace AgenterLab\Kafka;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
+use Throwable;
 
 class Consumer extends Command
 {
@@ -20,6 +22,23 @@ class Consumer extends Command
      * @var string
      */
     protected $description = 'Consume events';
+    
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Consume events';
+
+    /**
+     * Create a new console command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     /**
      * Execute the console command.
@@ -105,7 +124,6 @@ class Consumer extends Command
         $payload = json_decode($message->payload, true);
 
         if (config('kafka.debug')) {
-            Log::debug('Process topic: ' . $message->topic_name);
             Log::debug($payload);
         }
         
@@ -113,16 +131,40 @@ class Consumer extends Command
         $body = $payload['body'] ?? null;
 
         if (is_string($consumers)) {
-            return $this->runConsumer($consumers, $headers, $body);
-        }
-
-        foreach($consumers as $consumer) {
-            $this->runConsumer($consumer, $headers, $body);
+            $this->runConsumer($consumers, $headers, $body);
+        } else {
+            foreach($consumers as $consumer) {
+                $this->runConsumer($consumer, $headers, $body);
+            }
         }
     }
 
     private function runConsumer($consumer, $headers, $body) {
-        return (new $consumer($headers, $body))->handle();
+
+        try {
+            (new $consumer($headers, $body))->handle();
+        } catch (\Exception $e) {
+            $this->reportError($e);
+        }
+    }
+
+    /**
+     * Report or log an exception.
+     *
+     * @param \Throwable $e
+     * @return void
+     *
+     * @throws \Exception
+     */
+    private function reportError(Throwable $e)
+    {
+        try {
+            $logger = app(LoggerInterface::class);
+        } catch (Exception $ex) {
+            throw $e; // throw the original exception
+        }
+
+        $logger->error($e->getMessage(), ['exception' => $e]);
     }
 
 }
