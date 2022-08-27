@@ -22,13 +22,6 @@ class Consumer extends Command
      * @var string
      */
     protected $description = 'Consume events';
-    
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Consume events';
 
     /**
      * Create a new console command instance.
