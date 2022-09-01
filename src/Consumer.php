@@ -153,7 +153,7 @@ class Consumer extends Command
     {
         try {
             $logger = app(LoggerInterface::class);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             throw $e; // throw the original exception
         }
 
